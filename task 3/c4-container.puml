@@ -15,18 +15,17 @@ System_Boundary(internetBankSystem, "Интернет-банк") {
 
 System_Ext(cb, "ЦБ", "Содержит инфо о актуальных ставках")
 
-System_Boundary(callCenter,  "Кол центр для приема заявок") {
-    System_Ext(partnerSystemCall, "Внешняя система","обработка заявок на депозиты от новых клиентов")
-    System_Boundary(ourCallcenter, "Внутренний кол центр") {
+
+
+System_Boundary(ourCallcenter, "Внутренний кол центр") {
         Container(CallWebApp, "Веб-приложение", "React.js", "Интерфейс для новых клиентов для заявок на депозит.")
         Container(CallApi, "API", "Java Spring Boot", "Обрабатывает запросы от веб-приложения.")
         Container(CallDB, "База данных", "Postgresql", "Хранит информацию о клиентах.")
         Rel(CallApi,CallDB,"Чтение\запись данных о заявках" )
         Rel(CallWebApp,CallApi,"Создание заявок" )
-        Rel(partnerSystemCall,CallApi,"Создание заявок" )
         Rel(site, CallApi, "Отправляет запросы")
-    }
 }
+
 
 System_Boundary(ABSSystem, "Автоматизированная банковская система (АБС)") {
     Container(ABSApp, "Десктопное приложение", "Delphi", "Интерфейс для сотрудников банка.")
