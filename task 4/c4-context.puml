@@ -1,0 +1,41 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+
+Person(client, "Клиент", "Пользователь, который открывает депозит.")
+Person(managerCallCenter, "Сотрудник кол центра", "Обработка заявок от клиента")
+System_Ext(externalRateService, "Внешняя система ставок", "Система для получения актуальных ставок.")
+System_Ext(extCallCenter, "Внешний кол центр", "Обработка заявок от новых клиентов")
+
+System_Boundary(bankStandart, "Банк стандарт") {
+
+    Person(depositManager, "Сотрудник бэк офиса", "Пользователь, который обрабатывает заявки на депозит.")
+    Person(frontManager, "Сотрудник фронт офиса", "Пользователь, который проводит идентификацию.")
+    System(internetBank, "Интернет-банк", "Система для управления депозитами.")
+    System(site, "сайт", "Подача заявок на депозит от новых клиентов")
+    System(callCenter, "Система кол-центра", "Система для обработки заявок клиентов.")
+    System(smsGateway, "СМС-шлюз", "Система для отправки СМС уведомлений.")
+    System(ABS, "Автоматизированная банковская система (АБС)", "Система для управления банковскими операциями.")
+
+    Rel(client, site, "Взаимодействует через веб-интерфейс")
+    Rel(client, frontManager, "Идет на идентификацию")
+    Rel(client, internetBank, "Взаимодействует через веб-интерфейс")
+    Rel(depositManager, ABS, "Подтверждение условий депозита")
+    Rel(frontManager, ABS, "Идентификация нового клиента")
+    Rel(site, callCenter, "Передает заявки новых клиентов на депозит")
+    Rel(callCenter, ABS , "Передает заявки клиентов в АБС")
+    Rel(ABS, callCenter, "Получение актуальных ставок")
+    Rel(smsGateway, client, "смс")
+    Rel(internetBank, smsGateway, "Отправляет смс подтверждения")
+    Rel(internetBank, ABS, "Заявка на открытие депозита")
+    Rel(ABS, internetBank, "Актуальные и персонализированные ставки")
+    Rel(externalRateService, ABS, "Возвращает актуальные ставки")
+    Rel(ABS, externalRateService, "Запрашивает актуальные ставки")
+    Rel(ABS, smsGateway, "Отправляет уведомления о статусе заявки на депозит")
+    Rel(ABS, extCallCenter, "Отправка письма с актуальными ставками")
+    Rel(client, managerCallCenter, "Консультация о ставках")
+    Rel(managerCallCenter, callCenter, "Создание заявок")
+    Rel(managerCallCenter, extCallCenter, "Создание заявок")
+
+}
+@enduml

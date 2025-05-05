@@ -1,0 +1,48 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Container.puml
+
+Person(client, "Клиент", "Клиент")
+Person(depositManager, "Сотрудник бэк офиса", "Пользователь, который обрабатывает заявки на депозит.")
+Person(frontManager, "Сотрудник фронт офиса", "Пользователь, который проводит идентификацию.")
+Container(site, "Сайт", "React.js, PHP", "Интерфейс для новых клиентов для заявок на депозит.")
+
+System_Boundary(internetBankSystem, "Интернет-банк") {
+    Container(webapp, "WebApp", "ASP.NET MVC", "Обрабатывает запросы клиента")
+    Container(database, "База данных", "MS SQL", "Хранит информацию о клиентах.")
+    Rel(webapp, database, "Читает/записывает данные")
+    Rel(client, webapp, "Заявки на создание депозита")
+}
+
+System_Ext(cb, "ЦБ", "Содержит инфо о актуальных ставках")
+
+
+
+System_Boundary(ourCallcenter, "Внутренний кол центр") {
+        Container(CallWebApp, "Веб-приложение", "React.js", "Интерфейс для новых клиентов для заявок на депозит.")
+        Container(CallApi, "API", "Java Spring Boot", "Обрабатывает запросы от веб-приложения.")
+        Container(CallDB, "База данных", "Postgresql", "Хранит информацию о клиентах.")
+        Rel(CallApi,CallDB,"Чтение\запись данных о заявках" )
+        Rel(CallWebApp,CallApi,"Создание заявок" )
+        Rel(site, CallApi, "Отправляет запросы")
+}
+
+
+System_Boundary(ABSSystem, "Автоматизированная банковская система (АБС)") {
+    Container(ABSApp, "Десктопное приложение", "Delphi", "Интерфейс для сотрудников банка.")
+    Container(ABSDatabase, "База данных АБС", "Oracle", "Хранит информацию о банковских операциях.")
+    Container(betInfo, "Получатель ставок", "Java", "Получает инфо о ставках.")
+    Rel(ABSApp, ABSDatabase, "Читает/записывает данные")
+    Rel(depositManager, ABSApp, "Согласование условий для депозита")
+    Rel(frontManager, ABSApp, "Фиксация идентификации")
+    Rel(cb, betInfo, "Получение ставок")
+}
+
+
+Rel(client, site, "Заявка от нового клиента")
+
+Rel(webapp, ABSDatabase, "Передача заявок на депозит")
+Rel(CallApi, ABSDatabase, "Трансляция заявок в АБС")
+Rel(client, frontManager, "Идентификация новых клиентов")
+
+
+@enduml
